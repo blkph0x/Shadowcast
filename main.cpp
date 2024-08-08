@@ -7,6 +7,7 @@
 #include <QHBoxLayout>
 #include "SecureChatClient.h"
 #include "AuthManager.h"
+#include "logging.h" // Include the logging header
 
 class ChatWindow : public QMainWindow {
     Q_OBJECT
@@ -66,9 +67,12 @@ int main(int argc, char* argv[]) {
     Aws::SDKOptions options;
     Aws::InitAPI(options);
 
+    initLogging(); // Initialize logging
+    BOOST_LOG_TRIVIAL(info) << "Application started.";
+
     AuthManager authManager;
     if (!authManager.authenticateUser("username", "password")) {
-        std::cerr << "Authentication failed." << std::endl;
+        BOOST_LOG_TRIVIAL(error) << "Authentication failed.";
         return 1;
     }
 
@@ -80,5 +84,6 @@ int main(int argc, char* argv[]) {
 
     Aws::ShutdownAPI(options);
 
+    BOOST_LOG_TRIVIAL(info) << "Application stopped.";
     return ret;
 }
